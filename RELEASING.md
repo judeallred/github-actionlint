@@ -3,9 +3,7 @@
 ## Prerequisites
 
 1. **npm account**: Ensure you have an npm account and are a maintainer of the package.
-2. **NPM_TOKEN**: Create an npm access token at https://www.npmjs.com/settings/~/tokens
-   - Choose "Automation" or "Publish" scope
-   - Add the token as a repository secret named `NPM_TOKEN` in GitHub
+2. **Trusted Publishers (OIDC)**: Configure on npmjs.com so publishes use short-lived credentials—no token to store or renew.
 
 ## Fully automated releases
 
@@ -30,12 +28,25 @@ No manual steps required. Ensure `main` is not protected with "Require pull requ
    - Create a GitHub release with mirrored upstream notes
    - Publish to npm with provenance
 
+## Trusted Publishers setup (one-time)
+
+The release workflow uses [npm Trusted Publishers (OIDC)](https://docs.npmjs.com/trusted-publishers)—no token to store or renew.
+
+**First-time setup** (package must exist on npm before configuring):
+
+1. Publish once manually: `npm login` then `npm publish --access public` from the repo root.
+2. Go to [npmjs.com](https://www.npmjs.com/) → **Packages** → **github-actionlint** → **Settings** → **Trusted publishing**.
+3. Click **GitHub Actions** and enter:
+   - **Workflow filename**: `release.yaml`
+   - **Repository**: `github-actionlint`
+   - **Owner**: `judeallred`
+4. Save. Future publishes from this workflow will use OIDC—no `NPM_TOKEN` needed.
+
 ## GitHub Actions secrets
 
-| Secret         | Required for     | Description                                            |
-| -------------- | ---------------- | ------------------------------------------------------ |
-| `NPM_TOKEN`    | Release workflow | npm token for publishing (Automation or Publish scope) |
-| `GITHUB_TOKEN` | All workflows    | Automatically provided by GitHub Actions               |
+| Secret         | Required for     | Description                          |
+| -------------- | ---------------- | ------------------------------------ |
+| `GITHUB_TOKEN` | All workflows    | Automatically provided by GitHub    |
 
 ## Local publish (for testing)
 
