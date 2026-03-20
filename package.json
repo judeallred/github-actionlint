@@ -1,0 +1,62 @@
+{
+  "name": "github-actionlint",
+  "version": "1.7.11",
+  "description": "Run rhysd/actionlint from Node.js - downloads the official binary from GitHub Releases",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/judeallred/github-actionlint.git"
+  },
+  "bugs": {
+    "url": "https://github.com/judeallred/github-actionlint/issues"
+  },
+  "homepage": "https://github.com/judeallred/github-actionlint#readme",
+  "keywords": [
+    "actionlint",
+    "github-actionlint",
+    "github-actions",
+    "workflow",
+    "linter",
+    "ci"
+  ],
+  "bin": {
+    "github-actionlint": "./dist/bin/actionlint.js"
+  },
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "RELEASING.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "tsx test/run-tests.ts",
+    "test:parity": "tsx test/parity-test.ts",
+    "lint": "eslint lib bin test *.config.*",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint:workflows": "node dist/bin/actionlint.js .github/workflows/*.yaml",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "tar": "^7.4.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@types/adm-zip": "^0.5.8",
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0"
+  }
+}

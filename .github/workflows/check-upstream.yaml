@@ -1,0 +1,61 @@
+name: Check upstream actionlint releases
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync with actionlint releases
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Get latest actionlint release
+        id: upstream
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/rhysd/actionlint/releases/latest | jq -r '.tag_name')
+          VERSION="${LATEST#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "Latest actionlint: $VERSION"
+
+      - name: Get current package version
+        id: current
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
+          echo "Current package: $CURRENT"
+
+      - name: Bump version and push release tag
+        if: steps.upstream.outputs.version != steps.current.outputs.version
+        env:
+          UPSTREAM_VERSION: ${{ steps.upstream.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          npm version "$UPSTREAM_VERSION" --no-git-tag-version --allow-same-version
+
+          git add package.json
+          git commit -m "chore: bump to actionlint ${UPSTREAM_VERSION}"
+
+          git push origin main
+
+          git tag "v${UPSTREAM_VERSION}"
+          git push origin "v${UPSTREAM_VERSION}"
+
+      - name: No update needed
+        if: steps.upstream.outputs.version == steps.current.outputs.version
+        run: echo "Already at latest actionlint version ${{ steps.current.outputs.version }}"

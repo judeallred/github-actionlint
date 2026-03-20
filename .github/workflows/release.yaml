@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "actionlint version to release (e.g. 1.7.11)"
+        required: true
+        type: string
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Create release and publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update package.json version
+        run: |
+          npm version "${{ steps.version.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Install and test
+        run: |
+          npm ci
+          npm test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch upstream release notes
+        id: notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          curl -s "https://api.github.com/repos/rhysd/actionlint/releases/tags/v${VERSION}" | jq -r '.body // empty' > upstream_body.txt
+          {
+            echo "Mirrors [rhysd/actionlint v${VERSION}](https://github.com/rhysd/actionlint/releases/tag/v${VERSION})"
+            echo ""
+            if [ -s upstream_body.txt ]; then
+              echo "---"
+              echo ""
+              echo "## Upstream release notes"
+              echo ""
+              cat upstream_body.txt
+            fi
+          } > release_notes.md
+
+      - name: Create GitHub release
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          gh release create "v${VERSION}" \
+            --title "v${VERSION}" \
+            --notes-file release_notes.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
