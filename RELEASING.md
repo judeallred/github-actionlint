@@ -44,9 +44,9 @@ The release workflow uses [npm Trusted Publishers (OIDC)](https://docs.npmjs.com
 
 ## GitHub Actions secrets
 
-| Secret         | Required for     | Description                          |
-| -------------- | ---------------- | ------------------------------------ |
-| `GITHUB_TOKEN` | All workflows    | Automatically provided by GitHub    |
+| Secret         | Required for  | Description                      |
+| -------------- | ------------- | -------------------------------- |
+| `GITHUB_TOKEN` | All workflows | Automatically provided by GitHub |
 
 ## Local publish (for testing)
 
