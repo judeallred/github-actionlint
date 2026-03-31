@@ -1,6 +1,6 @@
 {
   "name": "github-actionlint",
-  "version": "1.7.11",
+  "version": "1.7.12",
   "description": "Run rhysd/actionlint from Node.js - downloads the official binary from GitHub Releases",
   "license": "MIT",
   "repository": {
