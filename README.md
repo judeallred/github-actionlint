@@ -1,5 +1,7 @@
 # github-actionlint
 
+[![npm](https://img.shields.io/npm/v/github-actionlint)](https://www.npmjs.com/package/github-actionlint)
+
 Run [actionlint](https://github.com/rhysd/actionlint)—the linter for GitHub Actions workflows—from your Node.js project. No separate install step for a binary: add a dev dependency, wire a script, and catch workflow mistakes before they land on `main`.
 
 ---
