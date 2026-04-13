@@ -9,12 +9,14 @@
 
 The **Check upstream actionlint releases** workflow runs daily (and can be triggered manually). When a new [rhysd/actionlint](https://github.com/rhysd/actionlint) release is detected:
 
-1. **Automatically** bumps `package.json` to match the new version
+1. **Automatically** bumps `package.json` and `package-lock.json` to match the new version
 2. **Automatically** commits and pushes to `main`
 3. **Automatically** creates and pushes tag `v{version}` (e.g. `v1.7.12`)
-4. The tag push triggers the **Release** workflow, which:
+4. **Automatically** triggers the **Release** workflow via `workflow_dispatch`, which:
    - Creates a GitHub release with mirrored notes from actionlint
    - Publishes to npm with provenance
+
+> **Note**: The release workflow is triggered explicitly via `gh workflow run` rather than relying on the tag push event. This is because pushes made with `GITHUB_TOKEN` [do not trigger downstream workflows](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#using-the-github_token-in-a-workflow), but `workflow_dispatch` events are exempt from this limitation.
 
 No manual steps required. Ensure `main` is not protected with "Require pull request reviews" if you want the automated push to succeed, or configure a PAT with bypass permissions.
 
