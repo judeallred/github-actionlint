@@ -73,8 +73,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upgrade npm for Trusted Publishers support
-        run: npm install -g npm@latest
-
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: npx -y npm@latest publish --provenance --access public
