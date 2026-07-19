@@ -1,6 +1,6 @@
 {
     "name": "github-actionlint",
-    "version": "1.7.11",
+    "version": "1.7.12",
     "description": "Run rhysd/actionlint from Node.js - downloads the official binary from GitHub Releases",
     "license": "MIT",
     "repository": {
@@ -45,7 +45,7 @@
         "node": ">=18.0.0"
     },
     "dependencies": {
-        "adm-zip": "^0.5.16",
+        "adm-zip": "^0.6.0",
         "tar": "^7.4.0"
     },
     "devDependencies": {
